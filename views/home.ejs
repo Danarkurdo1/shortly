@@ -9,45 +9,17 @@
             <div class="col-lg-6  pt-5 pe-3 order-lg-first">
                 <h1>More than just shorter links</h1>
                 <p>Build your brand’s recognition and get detailed insights on how your links are performing.</p>
-                <button class="btn btn-style" onclick="window.location.href='/signup'">Get Started</button>
+                <button class="btn btn-style" onclick="window.location.href='/short'">Get Started</button>
             </div>
             <div class="col-lg-6 order-first">
                 <img class="header-img" src="img/illustration-working.svg" alt="">
             </div>
-        </div>
-        <div class="shorten">
-            <form name="urlForm" action="/" method="post" onsubmit="return validateForm()">
-                <div class="input-group input-group-lg mb-1 shorten-box">
-                    <input id="url-input" name="urlInput"  class="form-control me-lg-2 " placeholder="Shorten a link here..">
-                    <button id="input-btn" class="btn-style btn-shorten btn-hover" value="submit"  type="submit">Shorten it!</button>
-                  </div>
-                  <span class="input-check"></span>
-            </form>
         </div>
     </div>
   </section>
 
   <!-- statistics section -->
   <section id="statictics-section">
-    <div class="container px-lg-5 ">
-      <% links.forEach((link, index)=>{ %> 
-        <div class="link-box mx-lg-5">
-            <p class="url"><%= link.originalURL %></p>
-            <span class="longline"></span>
-            <p id="url<%= index %>" class="shorten-url push"><%= link.shortURL %></p>
-            <button id="btn-copy-<%= index %>" onclick="copyToClipbourd('<%= index %>')" class="btn-copy btn-style btn-hover">copy</button>
-            <form action="/delete" method="post">
-              <input type="hidden" name="linkId" value="<%= link.idString %>">
-              <button type="submit" class="btn btn-outline-danger btn-delete">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                </svg>
-              </button>
-            </form>
-          </div>
-      <% }); %> 
-    </div>
     <div class="container text-center">
         <div class="statistics-title">
             <h2>Advanced Statistics</h2>

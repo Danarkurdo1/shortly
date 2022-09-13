@@ -5,16 +5,20 @@
     "dotenv": "^16.0.2",
     "ejs": "^3.1.8",
     "express": "^4.18.1",
+    "express-session": "^1.17.3",
     "fix-esm": "^1.0.1",
     "got": "^11.8.1",
     "mongoose": "^6.5.4",
-    "nanoid": "^4.0.0"
+    "mongoose-findorcreate": "^3.0.0",
+    "nanoid": "^3.1.20",
+    "passport": "^0.6.0",
+    "passport-local-mongoose": "^7.1.2",
+    "shortid": "^2.2.16"
   },
   "name": "shortly",
   "version": "1.0.0",
   "description": "shortening app using api",
   "main": "app.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -2,9 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const nanoid = require("fix-esm").require('nanoid');
-const got = require("got");
-const axios = require('axios');
+const session = require('express-session');
+const passport = require('passport');
+const passportLocalMongoose = require('passport-local-mongoose');
+// const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const findOrCreate = require('mongoose-findorcreate');
+const shortid = require('shortid');
+
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -12,86 +16,132 @@ const app = express();
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(session({
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: false,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+mongoose.connect(process.env.DATABASE + '/shortlyDB');
+
+const linksSchema = new mongoose.Schema({
+  urlId: String,
+  orginalUrl: String,
+});
+
+const userSchema = new mongoose.Schema({
+    username: String,
+    password: String,
+    googleId: String,
+    links: [linksSchema]
+}); 
+
+userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(findOrCreate);
+
+
+const User = mongoose.model('User', userSchema);
+const Link = mongoose.model('Link', linksSchema);
+
+passport.use(User.createStrategy());
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+  
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
 
 
 
 app.get('/', (req, res)=>{
-    axios.get('https://api.short.io/api/links', {
-    params: {
-        domain_id: '463215', 
-        limit: '150', 
-        offset: '0'
-    },
-    headers: {
-        accept: 'application/json',
-        authorization: process.env.API_KEY,
-    }
-  })
-    .then(function (response) {
-        res.render('home', {links:response.data.links});
-        console.log(response.data.links);
-    })
-    .catch(function (err) {
-        console.log(err);
-    });
+  res.render('home');
 });
 
 app.post('/', (req, res)=>{
-    const urlInput = req.body.urlInput;
-
-    var urlExpression = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
-    var regex = new RegExp(urlExpression);
-
-    if(urlInput == ""){
-        console.log("no input entered");
-    }else if(!urlInput.match(regex)){
-      console.log("this is not a link");
-    }else{
-        const options = {
-            method: 'POST',
-            url: 'https://api.short.io/links',
-            headers: {
-              authorization: process.env.API_KEY,
-            },
-            json: {
-              originalURL: urlInput,
-              domain: '4xqc.short.gy'
-            },
-            responseType: 'json'
-          };
-          
-          got(options).then(response => {
-            res.redirect('/');
-          });
-    }  
+    
 });
 
 app.post('/delete', (req, res)=>{
-   const options = {
-    headers: {
-      'content-type': 'application/json',
-      authorization: process.env.API_KEY,
-    }
-  };
-
-  const idString = req.body.linkId;
-  const apiUrl = 'https://api.short.io/links/' + idString;
-  axios.delete(apiUrl, options)
-  .then(function (response) {
-    res.redirect('/');
-  }) .catch(function (response) {
-    console.log(response);
-  });
+   
 });
 
 app.get('/signup', (req, res)=>{
   res.render('signup')
 });
 
+app.post('/signup', (req, res)=>{
+  User.register({username: req.body.username}, req.body.password, (err, user)=>{
+    if(err){
+      console.log(err);
+      res.redirect('/signup');
+    }else{
+      passport.authenticate('local')(req, res, ()=>{
+        res.redirect('/short');
+        console.log("signed up");
+      });
+    }
+  });
+});
+
 app.get('/login', (req, res)=>{
   res.render('login')
 });
 
+app.post('/login', (req, res)=>{
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password
+  });
+
+  req.login(user, (err)=>{
+    if(err){
+      console.log(err);
+      res.redirect('/login');
+    }else{
+      passport.authenticate('local')(req, res, ()=>{
+        res.redirect('/short');
+        console.log("logged in");
+      });
+    }
+  });
+
+});
+
+app.get('/short', (req, res)=>{
+    if(req.isAuthenticated()){
+        res.render('short', {links:req.user.links});
+    }else{
+        res.redirect('/signup');
+    }
+});
+
+app.post('/short', (req, res)=>{
+
+    const link = {
+      urlId: shortid.generate(),
+      orginalUrl: req.body.urlInput
+    }
+
+    User.findById(req.user._id, (err, foundUser)=>{
+      if(err){
+        console.log(err);
+      }else{
+        foundUser.links.push(link);
+        foundUser.save((err)=>{
+          if(err){
+            console.log(err);
+          }else{
+            res.redirect('/short');
+          }
+        });
+      }
+    });
+});
 
 
 app.listen(port, (req, res)=>{

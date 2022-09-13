@@ -2,20 +2,20 @@
 <div class="container m-lg-5 mt-5 mb-5">
     <div class="row">
         <div class="col-lg-6 formCenter">
-            <form class="signup-form ms-5" name="loginForm" action="/login" method="post" onsubmit="event.preventDefault(); return validateSignupForm()">
+            <form class="signup-form ms-5" name="loginForm" action="/login" method="post" onsubmit="return validateSignupForm()">
                 <div class="form-header">
                     <h2>Log in to Account</h2>
                 </div>
                 <div class="form-input">
                     <label for="email">Email</label>
-                    <input type="text" id="email" placeholder="john@example.com">
+                    <input type="text" name="username" id="email" placeholder="john@example.com">
                     <i class="bi bi-check-circle icon-valid-email"></i>
                     <i class="bi bi-exclamation-circle icon-invalid-email"></i>
                     <p id="emailMsg" class="err-msg"></p>
                 </div>
                 <div class="form-input">
                     <label for="password">Password</label>
-                    <input type="password" id="password">
+                    <input type="password" name="password" id="password">
                     <i class="bi bi-check-circle icon-valid-pass"></i>
                     <i class="bi bi-exclamation-circle icon-invalid-pass"></i>
                     <p id="passMsg" class="err-msg"></p>

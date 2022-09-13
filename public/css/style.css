@@ -78,14 +78,13 @@ p{
 }
 
 .shorten{
-    position: absolute;
-    bottom: -15%;
-    right: 10%;
+    position: static;
     background-image: url(../img/bg-shorten-desktop.svg);
     background-color: var(--Dark-Violet);
     padding: 2rem 1.5rem !important;
-    width: 80%;
+    width: 100%;
     border-radius: 10px;
+    margin: 2rem auto;
 }
 
 .btn-shorten{
@@ -118,12 +117,12 @@ p{
     align-items: baseline;
     padding: .7rem;
     margin-bottom: 1rem;
-    background-color: #fff;
+    background-color: var(--Very-Dark-Violet);
     border-radius: 8px;
 }
 
 .url{
-    color: #000;
+    color: #fff;
     margin-left: 1rem;
 }
 
@@ -347,10 +346,8 @@ footer{
     }
 
     .shorten{
-        position: absolute;
-        bottom: -8%;
-        right: 10%;
-        width: 80%;
+        position: static;
+        width: 100%;
     }
 
     .btn-shorten{
@@ -395,7 +392,6 @@ footer{
 
 @media only screen and (max-width:880px) {
     .shorten{
-        bottom: -10%;
         padding: .5rem !important;
     }
 
@@ -456,11 +452,7 @@ footer{
 
 @media only screen and (max-width:576px){
     .shorten{
-        position: absolute;
-        bottom: -15%;
-        right: -3.6%;
-        margin: 0 2rem 2rem 2rem;
-        width: 95%;
+        position: static;
         background-image: url(../img/bg-shorten-mobile.svg);
         background-repeat: no-repeat;
         background-size: cover;
