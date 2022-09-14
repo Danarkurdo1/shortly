@@ -8,6 +8,7 @@ const passportLocalMongoose = require('passport-local-mongoose');
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 const shortid = require('shortid');
+const open = require('open');
 
 
 const port = process.env.PORT || 3000;
@@ -44,8 +45,6 @@ userSchema.plugin(findOrCreate);
 
 
 const User = mongoose.model('User', userSchema);
-const Link = mongoose.model('Link', linksSchema);
-
 passport.use(User.createStrategy());
 passport.serializeUser(function(user, done) {
     done(null, user);
@@ -105,7 +104,6 @@ app.post('/login', (req, res)=>{
     }else{
       passport.authenticate('local')(req, res, ()=>{
         res.redirect('/short');
-        console.log("logged in");
       });
     }
   });
@@ -114,7 +112,7 @@ app.post('/login', (req, res)=>{
 
 app.get('/short', (req, res)=>{
     if(req.isAuthenticated()){
-        res.render('short', {links:req.user.links});
+      res.render('short', {links:req.user.links});
     }else{
         res.redirect('/signup');
     }
@@ -141,6 +139,32 @@ app.post('/short', (req, res)=>{
         });
       }
     });
+});
+
+app.post('/logout', (req, res)=>{
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/login');
+  });
+})
+
+app.get('/:shortId', (req, res, next)=>{
+  const shortId = req.params.shortId;
+  User.find((err, users)=>{
+    if(err){
+      console.log(err);
+    }else{
+      users.forEach((user)=>{
+        user.links.forEach((link)=>{
+          if(link.urlId === shortId){
+            res.redirect(link.orginalUrl);
+          }else{
+            console.log("404 not found");
+          }
+        })
+      });
+    }
+  });
 });
 
 
