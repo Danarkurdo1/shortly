@@ -5,10 +5,9 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const passport = require('passport');
 const passportLocalMongoose = require('passport-local-mongoose');
-// const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 const shortid = require('shortid');
-const open = require('open');
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 
 const port = process.env.PORT || 3000;
@@ -37,6 +36,7 @@ const userSchema = new mongoose.Schema({
     username: String,
     password: String,
     googleId: String,
+    profilePhoto: String,
     links: [linksSchema]
 }); 
 
@@ -55,18 +55,23 @@ passport.deserializeUser(function(user, done) {
 });
 
 
+// Google oauth
+passport.use(new GoogleStrategy({
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/auth/google/short"
+},
+function(accessToken, refreshToken, profile, cb) {
+  User.findOrCreate({ googleId: profile.id, profilePhoto: profile._json.picture }, function (err, user) {
+    return cb(err, user);
+  });
+}
+));
+
 
 
 app.get('/', (req, res)=>{
   res.render('home');
-});
-
-app.post('/', (req, res)=>{
-    
-});
-
-app.post('/delete', (req, res)=>{
-   
 });
 
 app.get('/signup', (req, res)=>{
@@ -110,9 +115,19 @@ app.post('/login', (req, res)=>{
 
 });
 
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile'] }));
+
+app.get('/auth/google/short', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/short');
+  });
+
 app.get('/short', (req, res)=>{
     if(req.isAuthenticated()){
-      res.render('short', {links:req.user.links});
+      res.render('short', {links:req.user.links,profilePhoto: req.user.profilePhoto});
     }else{
         res.redirect('/signup');
     }
