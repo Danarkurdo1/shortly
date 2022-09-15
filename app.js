@@ -54,12 +54,11 @@ passport.deserializeUser(function(user, done) {
   done(null, user);
 });
 
-
 // Google oauth
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/auth/google/short"
+  callbackURL: "https://shortly-v.herokuapp.com//auth/google/short"
 },
 function(accessToken, refreshToken, profile, cb) {
   User.findOrCreate({ googleId: profile.id, profilePhoto: profile._json.picture }, function (err, user) {
@@ -68,11 +67,11 @@ function(accessToken, refreshToken, profile, cb) {
 }
 ));
 
-
-
 app.get('/', (req, res)=>{
   res.render('home');
+  host = req.headers.host;
 });
+
 
 app.get('/signup', (req, res)=>{
   res.render('signup')
