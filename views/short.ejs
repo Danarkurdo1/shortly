@@ -50,7 +50,7 @@
             <img
               src="<%= profilePhoto %> "
               class="rounded-circle"
-              height="40"
+              height="20"
               alt="profile picture"
               loading="lazy"
             />
@@ -77,11 +77,11 @@
               <span class="input-check"></span>
         </form>
     </div>
-    <% links.forEach((link, index)=>{ %> 
+    <% links.reverse().forEach((link, index)=>{ %> 
       <div class="link-box mx-lg-5">
           <p class="url"><%= link.orginalUrl %></p>
           <span class="longline"></span>
-          <p id="url<%= index %>" class="shorten-url push">localhost:3000/<%= link.urlId %></p>
+          <p id="url<%= index %>" class="shorten-url push"><%= host %>/<%= link.urlId %></p>
           <button id="btn-copy-<%= index %>" onclick="copyToClipbourd('<%= index %>')" class="btn-copy btn-style btn-hover">copy</button>
         </div>
     <% }); %> 

@@ -127,7 +127,13 @@ app.get('/auth/google/short',
 
 app.get('/short', (req, res)=>{
     if(req.isAuthenticated()){
-      res.render('short', {links:req.user.links,profilePhoto: req.user.profilePhoto});
+      User.findById({_id: req.user._id}, (err, user)=>{
+        if(err){
+          console.log(err);
+        }else{
+          res.render('short', {links:user.links, profilePhoto: user.profilePhoto, host:req.headers.host});
+        }
+      });
     }else{
         res.redirect('/signup');
     }
@@ -173,8 +179,6 @@ app.get('/:shortId', (req, res, next)=>{
         user.links.forEach((link)=>{
           if(link.urlId === shortId){
             res.redirect(link.orginalUrl);
-          }else{
-            console.log("404 not found");
           }
         })
       });
