@@ -58,7 +58,7 @@ passport.deserializeUser(function(user, done) {
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "https://protected-sea-76076.herokuapp.com/auth/google/short"
+  callbackURL: "https://shoortly.herokuapp.com/auth/google/short"
 },
 function(accessToken, refreshToken, profile, cb) {
   User.findOrCreate({ googleId: profile.id, profilePhoto: profile._json.picture }, function (err, user) {
