@@ -25,7 +25,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect(process.env.DATABASE + '/shortlyDB');
+mongoose.connect(process.env.LOCAL_DATABASE + '/shortlyDB');
 
 const linksSchema = new mongoose.Schema({
   urlId: String,
@@ -58,10 +58,13 @@ passport.deserializeUser(function(user, done) {
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "https://shoortly.herokuapp.com/auth/google/short"
+  callbackURL: "http://localhost:3000/auth/google/short"
 },
 function(accessToken, refreshToken, profile, cb) {
-  User.findOrCreate({ googleId: profile.id, profilePhoto: profile._json.picture }, function (err, user) {
+  let img = profile._json.picture;
+  img = img.substring(0, img.length - 6);
+  User.findOrCreate({ googleId: profile.id, profilePhoto: img }, function (err, user) {
+    console.log(profile);
     return cb(err, user);
   });
 }
